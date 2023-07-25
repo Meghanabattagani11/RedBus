@@ -1,0 +1,186 @@
+package com.pages;
+
+
+	import org.openqa.selenium.By;
+	import org.openqa.selenium.WebDriver;
+
+	public class LoginPage {
+	    private WebDriver driver;
+	    
+	    private By usernameField = By.id("user-name");
+	    private By passwordField = By.id("password");
+	    private By loginButton = By.id("login-button");
+	    
+	    public LoginPage(WebDriver driver) {
+	    	this.driver = driver;
+	    }
+	    public void Username(String username) {
+	    	driver.findElement(usernameField).sendKeys(username);
+	    }
+	    public void Password(String password) {
+	    	driver.findElement(passwordField).sendKeys(password);
+	    }
+	    public void clickLoginButton(){
+	    	driver.findElement(loginButton).click();
+	    }
+	}
+package com.pages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class ProductPage {
+	  @FindBy(xpath = "//*[@id=\"add-to-cart-sauce-labs-backpack\"]")
+	     private WebElement firstProduct;
+	     
+	      public ProductPage(WebDriver driver) {
+	    	 PageFactory.initElements(driver,this);
+	    	 
+	    }
+	      public void clickFirstProduct() {
+	    	  firstProduct.click();
+	    	  
+	     }
+}
+
+package com.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+public class CartPage {
+    private WebDriver driver;
+
+    private By cartIcon = By.xpath("//*[@id=\"shopping_cart_container\"]/a");
+    private By checkoutButton = By.id("checkout");
+
+    public CartPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void openCart() {
+        driver.findElement(cartIcon).click();
+    }
+
+    public void checkout() {
+        driver.findElement(checkoutButton).click();
+     
+    }
+
+
+
+}
+package com.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class Details {
+	  private static WebDriver driver;
+	    
+	
+		    
+		    private static By firstnameField = By.id("first-name");
+		    private static By lastnameField = By.id("last-name");
+		    private static By postalcodeField = By.id("postal-code");
+		    private By continueButton = By.id("continue");
+		    private By FinishButton = By.id("finish");
+		    
+		    public Details(WebDriver driver) {
+		    	this.driver = driver;
+		    }
+		    public static void FirstName(String firstname) {
+		    	driver.findElement(firstnameField).sendKeys(firstname);
+		    }
+		    public static void LastName(String lastname) {
+		    	driver.findElement(lastnameField).sendKeys(lastname);
+		    }
+		    public static void PostalCode(String postalcode ) {
+		      driver.findElement(postalcodeField).sendKeys(postalcode);
+		    }
+		    public void clickContinueButton(){
+		    	driver.findElement(continueButton).click();
+		   }
+		    public void clickFinishButton(){
+		    	driver.findElement(FinishButton).click();
+
+}
+				
+}			
+package com.simplilearn.SwagBags;
+
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import com.pages.CartPage;
+import com.pages.Details;
+import com.pages.LoginPage;
+import com.pages.ProductPage;
+
+
+public class OrderPlacement {
+
+         WebDriver driver;
+	@BeforeTest
+	public void LaunchApplication() {
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get("https://www.saucedemo.com/");
+	}
+	 @Test
+	    public void testOrderPlacement() {
+	        // Login
+	        LoginPage loginPage = new LoginPage(driver);
+	        loginPage.Username("standard_user");
+	        loginPage.Password("secret_sauce");
+	        loginPage.clickLoginButton();
+	        
+	        // Add the first product to the cart
+	        // Implement your logic to add the product to the cart
+
+	    	ProductPage productPage = new ProductPage(driver);
+	    	productPage.clickFirstProduct();
+
+	        // Go to the cart page
+        CartPage cartPage = new CartPage(driver);
+	      cartPage.openCart();
+//
+//	        // Click on 'Checkout' button
+              cartPage.checkout();
+//
+//	        // Enter your details and continue
+//	        // Implement your logic to enter details and click 'Continue' button
+              Details details = new Details(driver);
+              
+              Details.FirstName("meghana");
+              Details.LastName("battagani");
+              Details.PostalCode("12345");
+             details.clickContinueButton();
+           
+//
+//	        // Click 'Finish' button
+//	        // Implement your logic to click 'Finish' button
+
+             details.clickFinishButton();
+             
+//	        // Verify the text 'Thank you for your order!' is visible
+	        String expectedText = "Thank you for your order!";
+	        String actualText = driver.findElement(By.cssSelector("#checkout_complete_container > h2")).getText();
+	        Assert.assertEquals(actualText, expectedText);
+	    }
+
+   @AfterClass
+	    public void teardown() {
+        driver.quit();
+	    }
+}
