@@ -1,0 +1,284 @@
+SourceCode:
+Features:
+Feature: Buy Physics book
+
+Scenario: a user is must be able to buy book in amazon
+Given a user is in home page of amazon
+When Type 'physics books' in the search box and then select 3rd option from the drop-down
+And select fourstars & up rating
+And select first book
+And Click 'Add to Cart' button
+And Verify the text - 'Added to Cart' is displayed
+And click on Go to cart
+And Click on 'Proceed to Buy' button
+Then Verify user is on the Sign in page he able to purchase the book successfully
+
+amazon.pages
+
+package amazon.pages;
+
+import java.time.Duration;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class HomePage {
+	private static Actions actions;
+	private static WebDriverWait wait;
+	@FindBy(id="twotabsearchtextbox")
+	static
+	WebElement searchBox;
+	@FindBy(xpath="//div[contains(@class,'autocomplete-results-container')][1]")
+	static
+	WebElement fullBox;
+	@FindBy(xpath="//section[contains(@aria-label,'4 Stars & Up')]")
+	static
+	 WebElement stars;
+	@FindBy(xpath="//div[contains(@class,'s-product-image-container')][1]")
+	static
+	 WebElement firstBook;
+	@FindBy(id="add-to-cart-button")
+	static
+	WebElement addCart;
+	@FindBy(xpath="//span[contains(@class,'a-size-medium-plus a-color-base sw-atc-text a-text-bold')][1]")
+	static
+	WebElement text;
+	@FindBy(linkText="Go to Cart")
+	static
+	WebElement goToCart;
+	@FindBy(name="proceedToRetailCheckout")
+	static
+	WebElement proceedToBuy;
+	      
+public HomePage(WebDriver driver) {
+	 PageFactory.initElements(driver,this);
+	 actions=new Actions(driver);
+	 wait=new WebDriverWait(driver,Duration.ofSeconds(60));
+	 
+}
+public static void searchProductName(String item) {
+	searchBox.sendKeys(item);
+	wait.until(ExpectedConditions.visibilityOfAllElements(fullBox));
+	actions.sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ENTER).build().perform();
+	}
+
+
+	public static void fourStars() throws InterruptedException
+	{
+		Thread.sleep(2000);
+		stars.click();
+		
+	}
+	public static void firstItem() throws InterruptedException 
+	{
+		Thread.sleep(2000);
+		firstBook.click();
+		
+	}
+	public static void addToCart() throws InterruptedException {
+		Thread.sleep(2000);
+		addCart.click();
+	}
+	public static String getMsg() {
+		String message=text.getText();
+		return message;
+	}
+	public static void viewCart()  throws InterruptedException{
+		Thread.sleep(2000);
+	goToCart.click();
+	}
+	
+   public static void buyBook()  throws InterruptedException{
+		Thread.sleep(2000);
+		proceedToBuy.click();
+   }
+}
+
+package amazon.pages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class SignIn {
+	@FindBy(xpath = "//h1[contains(@class,'small')]")
+	private WebElement signInText;
+	
+	
+	
+	
+	public SignIn(WebDriver driver) {
+		 PageFactory.initElements(driver,this);
+	
+
+}
+	public  String getSignInText() {
+		String text=signInText.getText();
+		return text;
+	}
+	
+
+}
+
+
+
+in.amazon.testScripts
+
+package in.amazon.testScripts;
+
+import org.openqa.selenium.WebDriver;
+
+public class Tools {
+      
+	protected static WebDriver driver;
+}
+
+
+package in.amazon.testScripts;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import amazon.pages.HomePage;
+import amazon.pages.SignIn;
+
+public class Driver extends Tools{
+
+    
+	protected static HomePage homepage;
+	protected static SignIn signIn;
+	
+	
+	public static void init() {
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get("https://amazon.in");
+		homepage = new HomePage(driver);
+		signIn = new SignIn(driver);
+		
+		
+	}
+	
+}
+
+
+package in.amazon.testScripts;
+
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
+public class BeforeAfter extends Tools {
+
+	@Before
+	public void setUp(Scenario scenario) {
+		Driver.init();
+	}
+  @After
+  public void tearDown() {
+	  driver.quit();
+  }
+}
+
+
+package in.amazon.testScripts;
+
+import java.util.ArrayList;
+
+import org.testng.Assert;
+
+import amazon.pages.HomePage;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
+public class BuyBookSteps extends Driver {
+	@Given("a user is in home page of amazon")
+	public void a_user_is_in_home_page_of_amazon() {
+	}
+
+	@When("Type {string} in the search box and then select 3rd option from the drop-down")
+	public void type_in_the_search_box_and_then_select_3rd_option_from_the_drop_down(String string) {
+
+		HomePage.searchProductName("physics books");
+
+	}
+
+	@When("select fourstars & up rating")
+	public void select_fourstars_up_rating() throws InterruptedException {
+		HomePage.fourStars();
+		
+
+	}
+
+	@When("select first book")
+	public void select_first_book() throws InterruptedException {
+		HomePage.firstItem();
+
+
+
+	}
+
+	@When("Click {string} button")
+	public void click_button(String string) throws InterruptedException {
+
+
+
+	}
+
+	@When("Verify the text - {string} is displayed")
+	public void verify_the_text_is_displayed(String string) throws InterruptedException {
+		ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+		driver.switchTo().window(tabs.get(1));
+		HomePage.addToCart();
+
+
+	}
+
+	@When("click on Go to cart")
+	public void click_on_go_to_cart() throws InterruptedException {
+		HomePage.viewCart();
+
+
+	}
+
+	@When("Click on {string} button")
+	public void click_on_button(String string) throws InterruptedException {
+		HomePage.buyBook();
+
+
+	}
+
+	@Then("Verify user is on the Sign in page he able to purchase the book successfully")
+	public void verify_user_is_on_the_sign_in_page_he_able_to_purchase_the_book_successfully() {
+		String expectedText = "Sign in";
+		String actualText = signIn.getSignInText();
+		Assert.assertEquals(actualText, expectedText);
+
+
+	}
+
+}
+
+package in.amazon.testScripts;
+
+import io.cucumber.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.CucumberOptions;
+
+@CucumberOptions(
+		features = "Features//buy_book1.feature",
+		glue = "in.amazon.testScripts"
+		//dryRun = true
+		//tags = "@product_purchase or @login_functionality"
+		
+		)
+public class TestRunner extends AbstractTestNGCucumberTests {
+}
+
+
+
